@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { authClient, signUp } from "@/lib/auth-client";
+import { redirect } from "next/navigation";
 
 const inputClasses =
   "h-11 w-full rounded-xl border border-input bg-card text-sm text-foreground outline-none placeholder:text-muted-foreground/70 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
@@ -73,24 +74,24 @@ export default function AuthCard() {
     (/[^A-Za-z0-9]/.test(password) ? 1 : 0)
   );
 
-  const onsubmit = async (e) => {
+  const onsubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Submited");
     const formData = new FormData(e.currentTarget);
     const user = Object.fromEntries(formData.entries());
+
     const { data, error } = await authClient.signUp.email({
-      name: user.name,
-      password: user.password,
-      email: user.email,
-      imageUrl: user.image,
+      name: String(user.name),
+      email: String(user.email),
+      password: String(user.password),
+      image: user.imageUrl ? String(user.imageUrl) : undefined,
     })
+
     if (data) {
       console.log(data);
-    }else{
+      redirect('/')
+    } else {
       console.log(error);
-      
     }
-
   }
 
 

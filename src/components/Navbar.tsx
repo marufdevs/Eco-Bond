@@ -5,6 +5,7 @@ import { Bell, ChevronDown, Menu, Plus, Sprout, Sun, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { authClient } from "@/lib/auth-client";
 
 const NAV_LINKS = [
   { label: "Upcoming Events", href: "#", active: true },
@@ -12,6 +13,8 @@ const NAV_LINKS = [
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { data: session } = authClient.useSession();
+
 
   return (
     <header className="sticky top-0 z-50 bg-secondary">
@@ -45,68 +48,71 @@ export default function Navbar() {
         </nav>
 
         {/* Actions */}
-        <div>
-          <Link href='/signup'>
-            <Button className="hidden h-9 rounded-lg px-3.5 md:inline-flex">
-              <Plus /> Login Now
-            </Button>
-          </Link>
-        </div>
-        <div className="flex items-center gap-1 sm:gap-1.5">
-          {/* Visual-only theme button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Theme"
-            className="rounded-full text-primary/70"
-          >
-            <Sun className="size-5" />
-          </Button>
+        <>
+          {
+            session?.user ? (<div className="flex items-center gap-1 sm:gap-1.5">
+              {/* Visual-only theme button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label="Theme"
+                className="rounded-full text-primary/70"
+              >
+                <Sun className="size-5" />
+              </Button>
 
-          <span className="relative">
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Notifications"
-              className="rounded-full text-primary/70"
-            >
-              <Bell className="size-5" />
-            </Button>
-            <span className="absolute right-1.5 top-1.5 size-2 rounded-full bg-emerald-500" />
-          </span>
+              <span className="relative">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Notifications"
+                  className="rounded-full text-primary/70"
+                >
+                  <Bell className="size-5" />
+                </Button>
+                <span className="absolute right-1.5 top-1.5 size-2 rounded-full bg-emerald-500" />
+              </span>
 
-          <Button className="hidden h-9 rounded-lg px-3.5 md:inline-flex">
-            <Plus /> Create Event
-          </Button>
+              <Button className="hidden h-9 rounded-lg px-3.5 md:inline-flex">
+                <Plus /> Create Event
+              </Button>
 
-          {/* User chip (desktop only) */}
-          <button
-            type="button"
-            className="hidden items-center gap-2 rounded-full py-1 pl-1 pr-2 hover:bg-muted xl:flex"
-            aria-label="Account menu"
-          >
-            <span className="flex size-8 items-center justify-center rounded-full bg-accent/60 text-xs font-bold text-primary">
-              TA
-            </span>
-            <span className="flex flex-col items-start leading-tight">
-              <span className="text-xs font-semibold text-primary">Tanjina A.</span>
-              <span className="text-[10px] text-muted-foreground">Volunteer</span>
-            </span>
-            <ChevronDown className="size-4 text-primary/60" />
-          </button>
+              {/* User chip (desktop only) */}
+              <button
+                type="button"
+                className="hidden items-center gap-2 rounded-full py-1 pl-1 pr-2 hover:bg-muted xl:flex"
+                aria-label="Account menu"
+              >
+                <span className="flex size-8 items-center justify-center rounded-full bg-accent/60 text-xs font-bold text-primary">
+                  TA
+                </span>
+                <span className="flex flex-col items-start leading-tight">
+                  <span className="text-xs font-semibold text-primary">Tanjina A.</span>
+                  <span className="text-[10px] text-muted-foreground">Volunteer</span>
+                </span>
+                <ChevronDown className="size-4 text-primary/60" />
+              </button>
 
-          {/* Mobile menu toggle */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full text-primary md:hidden"
-            aria-label={menuOpen ? "Close menu" : "Open menu"}
-            aria-expanded={menuOpen}
-            onClick={() => setMenuOpen((open) => !open)}
-          >
-            {menuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
-          </Button>
-        </div>
+              {/* Mobile menu toggle */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full text-primary md:hidden"
+                aria-label={menuOpen ? "Close menu" : "Open menu"}
+                aria-expanded={menuOpen}
+                onClick={() => setMenuOpen((open) => !open)}
+              >
+                {menuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+              </Button>
+            </div>) : (<div>
+              <Link href='/signup'>
+                <Button className="hidden h-9 rounded-lg px-3.5 md:inline-flex">
+                  <Plus /> Login Now
+                </Button>
+              </Link>
+            </div>)
+          }
+        </>
 
       </div>
 
