@@ -6,6 +6,12 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
+import {
+  Avatar,
+  AvatarBadge,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar"
 
 const NAV_LINKS = [
   { label: "Upcoming Events", href: "#", active: true },
@@ -84,10 +90,14 @@ export default function Navbar() {
                 aria-label="Account menu"
               >
                 <span className="flex size-8 items-center justify-center rounded-full bg-accent/60 text-xs font-bold text-primary">
-                  TA
+                  <Avatar>
+                    <AvatarImage src={session?.user.image} alt="@shadcn" />
+                    <AvatarFallback>{session?.user.name.toUpperCase().slice(0, 2)}</AvatarFallback>
+                    <AvatarBadge className="bg-green-600 dark:bg-green-800" />
+                  </Avatar>
                 </span>
                 <span className="flex flex-col items-start leading-tight">
-                  <span className="text-xs font-semibold text-primary">Tanjina A.</span>
+                  <span className="text-xs font-semibold text-primary">{session?.user.name}</span>
                   <span className="text-[10px] text-muted-foreground">Volunteer</span>
                 </span>
                 <ChevronDown className="size-4 text-primary/60" />

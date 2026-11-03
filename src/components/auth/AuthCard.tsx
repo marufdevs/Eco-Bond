@@ -16,6 +16,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { authClient, signUp } from "@/lib/auth-client";
 import { redirect } from "next/navigation";
+import { toast } from "@/components/ui/toast"
+
 
 const inputClasses =
   "h-11 w-full rounded-xl border border-input bg-card text-sm text-foreground outline-none placeholder:text-muted-foreground/70 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
@@ -78,7 +80,7 @@ export default function AuthCard() {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const user = Object.fromEntries(formData.entries());
-
+    console.log(user);
     const { data, error } = await authClient.signUp.email({
       name: String(user.name),
       email: String(user.email),
@@ -92,6 +94,18 @@ export default function AuthCard() {
     } else {
       console.log(error);
     }
+
+  }
+
+  const handleGoogleAuth = async () => {
+    console.log("Google");
+    const { data, error } = await authClient.signIn.social({
+      provider: "google",
+    });
+    if (data) {
+      redirect("/")
+    }
+    console.log(error);
   }
 
 
@@ -317,6 +331,7 @@ export default function AuthCard() {
           </div>
 
           <button
+            onClick={handleGoogleAuth}
             type="button"
             className="flex h-11 w-full items-center justify-center gap-3 rounded-xl border border-input bg-card text-sm font-semibold text-foreground hover:bg-muted"
           >
