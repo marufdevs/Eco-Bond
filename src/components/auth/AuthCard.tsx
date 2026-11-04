@@ -17,14 +17,15 @@ import { cn } from "@/lib/utils";
 import { authClient, signUp } from "@/lib/auth-client";
 import { redirect } from "next/navigation";
 import { toast } from "@/components/ui/toast"
+import SignInForm from "@/components/auth/SignInForm";
 
 
-const inputClasses =
+export const inputClasses =
   "h-11 w-full rounded-xl border border-input bg-card text-sm text-foreground outline-none placeholder:text-muted-foreground/70 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
 const STRENGTH_LABELS = ["Weak", "Weak", "Fair", "Good", "Secure"];
 
-function GoogleIcon() {
+export function GoogleIcon() {
   return (
     <svg viewBox="0 0 24 24" className="size-4" aria-hidden="true">
       <path
@@ -47,7 +48,7 @@ function GoogleIcon() {
   );
 }
 
-function FieldLabel({ children }: { children: ReactNode }) {
+export function FieldLabel({ children }: { children: ReactNode }) {
   return (
     <span className="mb-1.5 block text-sm font-medium text-foreground">
       {children} <span className="text-red-500">*</span>
@@ -55,7 +56,7 @@ function FieldLabel({ children }: { children: ReactNode }) {
   );
 }
 
-function FieldIcon({ icon: Icon }: { icon: typeof User }) {
+export function FieldIcon({ icon: Icon }: { icon: typeof User }) {
   return (
     <Icon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
   );
@@ -359,31 +360,8 @@ export default function AuthCard() {
           </div>
         </form>
       ) : (
-        /* SIGN IN — static placeholder */
-        <div className="mt-8 flex flex-1 flex-col">
-          <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-            Welcome back
-          </h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Sign in to your EcoBond account to track drives and impact credits.
-          </p>
-          <div className="flex flex-1 flex-col items-center justify-center rounded-2xl border border-dashed border-border bg-muted/40 p-10 text-center max-lg:my-8">
-            <Lock className="size-8 text-muted-foreground" />
-            <p className="mt-3 text-sm font-medium text-foreground">
-              Sign in form coming soon
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              This tab is a static placeholder in the Community Gateway mock.
-            </p>
-            <Button
-              type="button"
-              onClick={() => setActiveTab("create")}
-              className="mt-5 h-10 rounded-lg"
-            >
-              Create an account instead
-            </Button>
-          </div>
-        </div>
+        /* SIGN IN */
+        <SignInForm onCreateAccount={() => setActiveTab("create")} />
       )}
     </section>
   );
