@@ -25,6 +25,11 @@ const nextConfig: NextConfig = {
         hostname: "cdn.britannica.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "marufweb.com",
+        pathname: "/**",
+      },
     ],
   },
 };

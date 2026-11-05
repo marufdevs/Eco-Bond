@@ -110,6 +110,7 @@ export default function CreateEventPage() {
     const router = useRouter();
     const [form, setForm] = useState<FormState>(initial);
     const [submitting, setSubmitting] = useState<"draft" | "publish" | null>(null);
+    const [clearing, setClearing] = useState<"clear" | "cleared" | null>(null);
     const [error, setError] = useState("");
 
     const set = <K extends keyof FormState>(key: K, value: FormState[K]) =>
@@ -122,6 +123,10 @@ export default function CreateEventPage() {
                 ? form.equipment.filter((e) => e !== item)
                 : [...form.equipment, item]
         );
+
+    const hendleClear = ()=>{
+        setForm(initial)
+    }
 
     async function submit(status: "draft" | "published") {
         setError("");
@@ -477,6 +482,14 @@ export default function CreateEventPage() {
                                 {error ? <span className="text-[#ba1a1a]">{error}</span> : "Review all sections before publishing."}
                             </p>
                             <div className="flex gap-2">
+                                <button
+                                    type="button"
+                                    disabled={submitting !== null}
+                                    onClick={() => hendleClear()}
+                                    className="rounded-xl border-[1.5px] border-[#123D2C] px-5 py-2.5 text-sm font-semibold text-[#123D2C] transition hover:bg-[#123D2C]/6 disabled:opacity-60"
+                                >
+                                    Clear
+                                </button>
                                 <button
                                     type="button"
                                     disabled={submitting !== null}

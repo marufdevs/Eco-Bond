@@ -5,15 +5,17 @@ import { Bell, Menu, Plus, Sprout, Sun, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import UserMenu from "@/components/UserMenu";
 
 const NAV_LINKS = [
-  { label: "Upcoming Events", href: "/upcoming-events", active: true },
+  { label: "Upcoming Events", href: "/upcoming-events" },
 ];
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
   const { data: session } = authClient.useSession();
 
 
@@ -33,19 +35,23 @@ export default function Navbar() {
 
         {/* Desktop / tablet nav */}
         <nav className="hidden items-center rounded-full bg-card p-1 shadow-sm md:flex" aria-label="Main navigation">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.label}
-              href={link.href}
-              aria-current={link.active ? "page" : undefined}
-              className={cn(
-                "rounded-full px-4 py-1.5 text-sm font-medium text-primary/60 transition-colors hover:text-primary",
-                link.active && "bg-white text-primary shadow-sm"
-              )}
-            >
-              {link.label}
-            </Link>
-          ))}
+          {NAV_LINKS.map((link) => {
+            const active = pathname === link.href;
+
+            return (
+              <Link
+                key={link.label}
+                href={link.href}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "rounded-full px-4 py-1.5 text-sm font-medium text-primary/60 transition-colors hover:text-primary",
+                  active && "bg-white text-primary shadow-sm"
+                )}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Actions */}
@@ -110,20 +116,24 @@ export default function Navbar() {
       {menuOpen && (
         <nav className="border-t border-border/60 bg-secondary px-4 pb-4 pt-2 md:hidden" aria-label="Mobile navigation">
           <ul className="flex flex-col gap-1">
-            {NAV_LINKS.map((link) => (
-              <li key={link.label}>
-                <Link
-                  href={link.href}
-                  aria-current={link.active ? "page" : undefined}
-                  className={cn(
-                    "block rounded-lg px-3 py-2 text-sm font-medium text-primary/70 hover:bg-muted",
-                    link.active && "bg-card text-primary shadow-sm"
-                  )}
-                >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
+            {NAV_LINKS.map((link) => {
+              const active = pathname === link.href;
+
+              return (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    aria-current={active ? "page" : undefined}
+                    className={cn(
+                      "block rounded-lg px-3 py-2 text-sm font-medium text-primary/70 hover:bg-muted",
+                      active && "bg-card text-primary shadow-sm"
+                    )}
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
           <Link href={"/create-event"}>
             <Button className="mt-3 h-10 w-full rounded-lg">
