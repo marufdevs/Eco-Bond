@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import { ArrowRight, Clock, MapPin } from "lucide-react";
 
@@ -49,7 +50,14 @@ export default function EventCard({ event }: { event: EcoEvent }) {
     capacity > 0 ? Math.min(100, Math.round((enrolled / capacity) * 100)) : 0;
 
   return (
-    <article className={cn(eventCardStyles())}>
+    <Link
+      href={`/upcoming-events/${event.id}`}
+      aria-label={`View ${event.title}`}
+      className={cn(
+        eventCardStyles(),
+        "focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
+      )}
+    >
       <div className="relative aspect-[16/9] overflow-hidden">
         <Image
           src={imageSrc}
@@ -138,12 +146,12 @@ export default function EventCard({ event }: { event: EcoEvent }) {
             </span>
           </div>
 
-          <button type="button" className={cn(eventCtaStyles())}>
+          <span className={cn(eventCtaStyles())}>
             View Event
             <ArrowRight className="size-3.5" aria-hidden="true" />
-          </button>
+          </span>
         </div>
       </div>
-    </article>
+    </Link>
   );
 }

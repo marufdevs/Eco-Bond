@@ -41,6 +41,21 @@ export type EcoEvent = {
   tags: QuickFilterId[];
 };
 
+/** Full event record used by the single event page. */
+export type EventDetail = EcoEvent & {
+  /** Long-form campaign briefing. */
+  description: string;
+  /** Display time, e.g. "12:30 PM" */
+  endTime: string;
+  /** Raw metropolitan zone/Thana, e.g. "Dhaka North - Tejgaon / Hatirjheel Zone" */
+  zone: string;
+  ageRange: string;
+  equipment: string[];
+  bringOnSite: string;
+  targetAmount: number;
+  targetUnit: string;
+};
+
 export type EventsMeta = {
   /** Total scheduled events represented by the archive (used in the count line). */
   totalUpcoming: number;

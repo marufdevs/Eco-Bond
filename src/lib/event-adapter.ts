@@ -1,6 +1,7 @@
 import type {
   EcoEvent,
   EventCategory,
+  EventDetail,
   EventsMeta,
   QuickFilterId,
 } from "@/types/event";
@@ -27,6 +28,11 @@ export type ApiEvent = {
   imageUrl?: string;
   status?: string;
   enrolled?: number;
+  ageRange?: string;
+  equipment?: string[];
+  bringOnSite?: string;
+  targetAmount?: number;
+  targetUnit?: string;
   organizer?: {
     name?: string;
     initials?: string;
@@ -73,17 +79,101 @@ export function toArea(zone?: string): string {
   return cleaned || "Bangladesh";
 }
 
-export function formatTime(startTime?: string): string {
-  if (!startTime) return "Time TBA";
-
-  const [hourValue, minuteValue] = startTime.split(":").map(Number);
+function formatClock(value: string): string | null {
+  const [hourValue, minuteValue] = value.split(":").map(Number);
   if (Number.isNaN(hourValue) || Number.isNaN(minuteValue)) {
-    return startTime;
+    return null;
   }
 
   const period = hourValue >= 12 ? "PM" : "AM";
   const hour = hourValue % 12 || 12;
   return `${String(hour).padStart(2, "0")}:${String(minuteValue).padStart(2, "0")} ${period}`;
+}
+
+export function formatTime(startTime?: string): string {
+  if (!startTime) return "Time TBA";
+  return formatClock(startTime) ?? startTime;
+}
+
+/** Formats a `HH:MM` value, returning an empty string when it is missing. */
+export function formatClockTime(value?: string): string {
+  if (!value) return "";
+  return formatClock(value) ?? value;
+}
+
+export function formatTimeRange(
+  startTime?: string,
+  endTime?: string,
+): string {
+  const start = formatClockTime(startTime);
+  const end = formatClockTime(endTime);
+  if (!start) return "Time TBA";
+  return end ? `${start} \u2013 ${end}` : start;
+}
+
+/** Check-in opens 20 minutes before the campaign start time. */
+export function getCheckInTime(startTime?: string): string | null {
+  if (!startTime) return null;
+
+  const match = startTime.trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i);
+  if (!match) return null;
+
+  const period = match[3]?.toUpperCase();
+  let hour = Number(match[1]);
+  const minute = Number(match[2]);
+
+  if (period === "PM" && hour < 12) hour += 12;
+  if (period === "AM" && hour === 12) hour = 0;
+
+  const total = Math.max(0, hour * 60 + minute - 20);
+  const checkInHour = Math.floor(total / 60);
+  const checkInMinute = total % 60;
+  return formatClock(
+    `${String(checkInHour).padStart(2, "0")}:${String(checkInMinute).padStart(2, "0")}`,
+  );
+}
+
+/** Short campaign name used for the hero; full title is kept for the body. */
+export function getHeroTitle(title: string): string {
+  const [short] = title.split(":");
+  return short?.trim() || title;
+}
+
+const LONG_MONTHS = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+const WEEKDAYS = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+
+/** Formats an ISO date as "Wednesday, November 18, 2026" without timezone drift. */
+export function formatLongDate(isoDate?: string): string {
+  const dateOnly = toDateOnly(isoDate);
+  if (!dateOnly) return "Date TBA";
+
+  const [year, month, day] = dateOnly.split("-").map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  if (Number.isNaN(date.getTime())) return "Date TBA";
+
+  return `${WEEKDAYS[date.getUTCDay()]}, ${LONG_MONTHS[date.getUTCMonth()]} ${date.getUTCDate()}, ${date.getUTCFullYear()}`;
 }
 
 function toDateOnly(value?: string): string {
@@ -160,6 +250,24 @@ export function normalizeEvent(doc: ApiEvent): EcoEvent {
         "EC",
     },
     tags: deriveTags(doc, area, category),
+  };
+}
+
+export function normalizeEventDetail(doc: ApiEvent): EventDetail {
+  const event = normalizeEvent(doc);
+  const zone = doc.zone?.trim() || event.area;
+
+  return {
+    ...event,
+    description: doc.description?.trim() || "",
+    endTime: formatClockTime(doc.endTime),
+    zone,
+    ageRange: doc.ageRange?.trim() || "All community members",
+    equipment: (doc.equipment ?? []).map((item) => item.trim()).filter(Boolean),
+    bringOnSite: doc.bringOnSite?.trim() || "",
+    targetAmount: Number(doc.targetAmount) || 0,
+    targetUnit: doc.targetUnit?.trim() || "kg",
+    location: doc.assemblyPoint?.trim() || zone,
   };
 }
 

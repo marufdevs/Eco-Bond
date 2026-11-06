@@ -4,3 +4,7 @@ export { default as EventsStats } from "./EventsStats";
 export { default as EventsFilterBar } from "./EventsFilterBar";
 export { default as EventGrid } from "./EventGrid";
 export { default as EventCard } from "./EventCard";
+export { default as EventDetailHero } from "./EventDetailHero";
+export { default as EventDetailSkeleton } from "./EventDetailSkeleton";
+export { default as EventRegistrationCard } from "./EventRegistrationCard";
+export { default as EventSummaryCard } from "./EventSummaryCard";
